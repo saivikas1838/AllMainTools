@@ -1,1 +1,639 @@
-/* You can add global styles to this file, and also import other style files */
+// ============================================================
+//  NEU DESIGN SYSTEM — Global Stylesheet
+//  Neumorphic Dashboard · v1.0
+// ============================================================
+//
+//  QUICK REFERENCE
+//  ───────────────
+//  Surfaces      : .neu-card, .neu-panel, .neu-sidebar
+//  Inputs        : .neu-input-box  +  .floating-label  +  .neu-input
+//  Buttons       : .neu-btn-primary, .neu-btn-secondary, .neu-btn-icon
+//  Toggle        : .neu-toggle [.neu-toggle--on]
+//  Avatar        : .neu-avatar [.neu-avatar--sm / --lg]
+//  Badge         : .neu-badge [.neu-badge--success/warn/danger/info]
+//  Divider       : .neu-divider, .neu-divider--label
+//  Social btn    : .neu-social-btn
+//  Layout        : .neu-container, .neu-row, .neu-col
+//  Typography    : .neu-title, .neu-subtitle, .neu-label, .neu-muted
+//  Utility       : .neu-icon, .gap-*, .mt-*, .mb-*, .w-full
+// ============================================================
+
+
+// ─── 1. DESIGN TOKENS ─────────────────────────────────────────────────────────
+
+$neu-bg           : #e8eaf0;   // base surface colour
+$neu-light        : #ffffff;   // highlight shadow
+$neu-dark         : #c5c8d4;   // depth shadow
+$neu-border       : rgba(#8b90a8, 0.28);
+
+$neu-text-primary : #3d4263;
+$neu-text-muted   : #8b90a8;
+$neu-accent       : #6c71a0;
+$neu-accent-light : rgba(#6c71a0, 0.12);
+
+$neu-success      : #4caf7d;
+$neu-warn         : #e9a84c;
+$neu-danger       : #e06b6b;
+$neu-info         : #5b9bd5;
+
+$neu-radius-sm    : 8px;
+$neu-radius-md    : 12px;
+$neu-radius-lg    : 20px;
+$neu-radius-xl    : 32px;
+$neu-radius-full  : 999px;
+
+$neu-font         : 'Nunito', 'Segoe UI', sans-serif;
+
+
+// ─── 2. SHADOW MIXINS ─────────────────────────────────────────────────────────
+
+// Raised — element pops out of the surface
+@mixin neu-raised($intensity: 1) {
+  box-shadow:
+    #{6px * $intensity} #{6px * $intensity} #{16px * $intensity} $neu-dark,
+    #{-6px * $intensity} #{-6px * $intensity} #{16px * $intensity} $neu-light;
+}
+
+// Inset — element pressed into the surface (inputs, troughs)
+@mixin neu-inset($intensity: 1) {
+  box-shadow:
+    inset #{4px * $intensity} #{4px * $intensity} #{10px * $intensity} $neu-dark,
+    inset #{-4px * $intensity} #{-4px * $intensity} #{10px * $intensity} $neu-light;
+}
+
+// Flat — subtle, for secondary surfaces
+@mixin neu-flat {
+  box-shadow:
+    3px 3px 8px $neu-dark,
+    -3px -3px 8px $neu-light;
+}
+
+
+// ─── 3. BASE RESET ────────────────────────────────────────────────────────────
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: $neu-bg;
+  color: $neu-text-primary;
+  font-family: $neu-font;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: $neu-accent; text-decoration: none; &:hover { text-decoration: underline; } }
+button { font-family: inherit; cursor: pointer; }
+
+
+// ─── 4. LAYOUT ────────────────────────────────────────────────────────────────
+
+// Full-screen centred wrapper (login / splash pages)
+.neu-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $neu-bg;
+  padding: 24px;
+}
+
+// Dashboard shell
+.neu-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 64px 1fr;
+  min-height: 100vh;
+  background: $neu-bg;
+
+  &__sidebar  { grid-row: 1 / -1; }
+  &__topbar   { grid-column: 2; }
+  &__content  { grid-column: 2; padding: 28px; overflow-y: auto; }
+}
+
+// Flex row helper
+.neu-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &--between { justify-content: space-between; }
+  &--center  { justify-content: center; }
+  &--wrap    { flex-wrap: wrap; }
+}
+
+// Simple column helper
+.neu-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.w-full { width: 100%; }
+
+
+// ─── 5. SURFACES ──────────────────────────────────────────────────────────────
+
+// Main card (forms, widgets)
+.neu-card {
+  background: $neu-bg;
+  border-radius: $neu-radius-xl;
+  padding: 40px 36px;
+  @include neu-raised;
+
+  &--sm { padding: 24px; border-radius: $neu-radius-lg; }
+  &--lg { padding: 56px 48px; }
+}
+
+// Flat panel (dashboard sections, stat blocks)
+.neu-panel {
+  background: $neu-bg;
+  border-radius: $neu-radius-lg;
+  padding: 24px;
+  @include neu-flat;
+}
+
+// Sidebar
+.neu-sidebar {
+  background: $neu-bg;
+  border-radius: 0 $neu-radius-xl $neu-radius-xl 0;
+  padding: 28px 20px;
+  @include neu-raised;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Top bar
+.neu-topbar {
+  background: $neu-bg;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 0 $neu-radius-lg $neu-radius-lg;
+  @include neu-flat;
+}
+
+
+// ─── 6. TYPOGRAPHY ────────────────────────────────────────────────────────────
+
+.neu-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: $neu-text-primary;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+
+  &--sm  { font-size: 1.15rem; }
+  &--lg  { font-size: 2.2rem; }
+  &--xl  { font-size: 2.8rem; }
+}
+
+.neu-subtitle {
+  font-size: 0.875rem;
+  color: $neu-text-muted;
+  line-height: 1.5;
+}
+
+.neu-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $neu-text-muted;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.neu-muted {
+  font-size: 0.85rem;
+  color: $neu-text-muted;
+}
+
+.neu-link {
+  color: $neu-accent;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+
+// ─── 7. FORM FIELDS ───────────────────────────────────────────────────────────
+//
+//  USAGE:
+//  <div class="neu-field-wrapper">
+//    <div class="neu-input-box" [class.focused]="..." [class.filled]="...">
+//      <label class="floating-label">Your Label</label>
+//      <div class="input-inner">
+//        <i class="pi pi-envelope field-icon"></i>
+//        <input class="neu-input" ... />
+//        <!-- optional: <button class="toggle-eye"> -->
+//      </div>
+//    </div>
+//  </div>
+
+.neu-field-wrapper { width: 100%; }
+
+.neu-input-box {
+  position: relative;
+  width: 100%;
+  border: 1.5px solid $neu-border;
+  border-radius: $neu-radius-md;
+  background: $neu-bg;
+  @include neu-inset;
+  transition: border-color 0.2s;
+
+  // Floating label — default: centred inside the box
+  .floating-label {
+    position: absolute;
+    top: 50%;
+    left: 42px;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: $neu-text-muted;
+    background: $neu-bg;
+    padding: 0 4px;
+    pointer-events: none;
+    transition: top 0.18s ease, left 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  // Raised label when focused or filled
+  &.focused,
+  &.filled {
+    .floating-label {
+      top: 0;
+      left: 12px;
+      font-size: 0.72rem;
+      color: $neu-accent;
+    }
+  }
+
+  &.focused { border-color: rgba($neu-accent, 0.55); }
+
+  // No-icon variant — label starts from left edge
+  &.no-icon .floating-label { left: 14px; }
+  &.no-icon.focused .floating-label,
+  &.no-icon.filled  .floating-label { left: 10px; }
+}
+
+.input-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 52px;
+  padding: 0 12px;
+  gap: 10px;
+
+  &--tall { height: 96px; align-items: flex-start; padding-top: 14px; } // textarea
+}
+
+.field-icon {
+  font-size: 0.95rem;
+  color: $neu-text-muted;
+  flex-shrink: 0;
+}
+
+.neu-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: $neu-font;
+  color: $neu-text-primary;
+
+  &::placeholder { color: transparent; } // label replaces placeholder
+  resize: none; // for textarea
+}
+
+.toggle-eye {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: $neu-text-muted;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+  &:hover { color: $neu-accent; }
+  .pi { font-size: 1rem; }
+}
+
+
+// ─── 8. BUTTONS ───────────────────────────────────────────────────────────────
+
+// Primary — full width raised
+.neu-btn-primary {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: $neu-radius-md;
+  background: $neu-bg;
+  color: $neu-text-primary;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: $neu-font;
+  letter-spacing: 0.3px;
+  @include neu-raised;
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:active {
+    @include neu-inset;
+    transform: scale(0.98);
+  }
+
+  &--accent {
+    background: $neu-accent;
+    color: #fff;
+    box-shadow:
+      6px 6px 16px rgba($neu-accent, 0.35),
+      -4px -4px 12px $neu-light;
+  }
+}
+
+// Secondary — flat, auto width
+.neu-btn-secondary {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: $neu-radius-md;
+  background: $neu-bg;
+  color: $neu-text-primary;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: $neu-font;
+  @include neu-flat;
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:active {
+    @include neu-inset;
+    transform: scale(0.97);
+  }
+}
+
+// Icon-only button (sidebar nav, toolbar)
+.neu-btn-icon {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: $neu-radius-md;
+  background: $neu-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $neu-text-muted;
+  font-size: 1.1rem;
+  @include neu-flat;
+  transition: box-shadow 0.15s, color 0.15s, transform 0.15s;
+
+  &:hover { color: $neu-accent; }
+
+  &:active {
+    @include neu-inset;
+    transform: scale(0.95);
+  }
+
+  &--active {
+    color: $neu-accent;
+    @include neu-inset;
+  }
+}
+
+// Social / OAuth buttons
+.neu-social-btn {
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: $neu-radius-md;
+  background: $neu-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $neu-text-primary;
+  @include neu-raised(0.85);
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:active {
+    @include neu-inset;
+    transform: scale(0.95);
+  }
+}
+
+
+// ─── 9. TOGGLE SWITCH ─────────────────────────────────────────────────────────
+//
+//  USAGE:
+//  <button class="neu-toggle" [class.neu-toggle--on]="value" (click)="toggle()">
+//    <span class="neu-toggle__knob"></span>
+//  </button>
+
+.neu-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: $neu-radius-full;
+  border: none;
+  cursor: pointer;
+  background: $neu-bg;
+  @include neu-inset(0.8);
+  transition: background 0.25s;
+  flex-shrink: 0;
+  padding: 0;
+
+  &__knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $neu-bg;
+    box-shadow: 2px 2px 5px $neu-dark, -2px -2px 5px $neu-light;
+    transition: transform 0.25s ease, background 0.25s;
+  }
+
+  &--on {
+    background: $neu-accent-light;
+
+    .neu-toggle__knob {
+      transform: translateX(20px);
+      background: $neu-accent;
+      box-shadow: 2px 2px 5px rgba($neu-accent, 0.4), -1px -1px 3px $neu-light;
+    }
+  }
+}
+
+
+// ─── 10. AVATAR ───────────────────────────────────────────────────────────────
+
+.neu-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: $neu-bg;
+  @include neu-raised(0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  .pi    { font-size: 1.8rem; color: $neu-text-muted; }
+  img    { width: 100%; height: 100%; object-fit: cover; }
+
+  &--sm  { width: 40px; height: 40px; .pi { font-size: 1.1rem; } }
+  &--lg  { width: 96px; height: 96px; .pi { font-size: 2.4rem; } }
+}
+
+
+// ─── 11. BADGE ────────────────────────────────────────────────────────────────
+
+.neu-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: $neu-radius-full;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: $neu-bg;
+  color: $neu-text-muted;
+  @include neu-flat;
+
+  &--success { color: $neu-success; box-shadow: 2px 2px 6px rgba($neu-success,.25), -2px -2px 6px $neu-light; }
+  &--warn    { color: $neu-warn;    box-shadow: 2px 2px 6px rgba($neu-warn,.25),    -2px -2px 6px $neu-light; }
+  &--danger  { color: $neu-danger;  box-shadow: 2px 2px 6px rgba($neu-danger,.25),  -2px -2px 6px $neu-light; }
+  &--info    { color: $neu-info;    box-shadow: 2px 2px 6px rgba($neu-info,.25),    -2px -2px 6px $neu-light; }
+}
+
+
+// ─── 12. DIVIDER ──────────────────────────────────────────────────────────────
+
+.neu-divider {
+  width: 100%;
+  height: 1px;
+  background: $neu-border;
+  margin: 8px 0;
+}
+
+// Divider with centred text label
+.neu-divider--label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $neu-border;
+  }
+
+  span {
+    font-size: 0.7rem;
+    color: $neu-text-muted;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+  }
+}
+
+
+// ─── 13. SIDEBAR NAV ITEM ─────────────────────────────────────────────────────
+//
+//  USAGE:
+//  <a class="neu-nav-item" [class.neu-nav-item--active]="isActive">
+//    <i class="pi pi-home neu-icon"></i>
+//    <span>Dashboard</span>
+//  </a>
+
+.neu-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: $neu-radius-md;
+  color: $neu-text-muted;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.18s, box-shadow 0.18s, background 0.18s;
+  text-decoration: none;
+
+  &:hover {
+    color: $neu-text-primary;
+    @include neu-flat;
+  }
+
+  &--active {
+    color: $neu-accent;
+    @include neu-inset(0.7);
+    background: $neu-accent-light;
+  }
+}
+
+
+// ─── 14. STAT / KPI CARD ──────────────────────────────────────────────────────
+//
+//  USAGE:
+//  <div class="neu-stat">
+//    <span class="neu-stat__label">Total Users</span>
+//    <span class="neu-stat__value">12,540</span>
+//    <span class="neu-stat__delta neu-stat__delta--up">+4.2%</span>
+//  </div>
+
+.neu-stat {
+  @extend .neu-panel;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label { @extend .neu-label; }
+
+  &__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $neu-text-primary;
+    line-height: 1;
+  }
+
+  &__delta {
+    font-size: 0.8rem;
+    font-weight: 700;
+
+    &--up   { color: $neu-success; }
+    &--down { color: $neu-danger; }
+  }
+}
+
+
+// ─── 15. UTILITY SPACING & HELPERS ────────────────────────────────────────────
+
+// Icon baseline
+.neu-icon {
+  font-size: 1.1rem;
+  color: $neu-text-muted;
+  flex-shrink: 0;
+}
+
+// Gaps
+.gap-4  { gap: 4px; }
+.gap-8  { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.gap-24 { gap: 24px; }
+
+// Margin top / bottom
+@each $size in (4, 8, 12, 16, 24, 32, 48) {
+  .mt-#{$size} { margin-top:    #{$size}px; }
+  .mb-#{$size} { margin-bottom: #{$size}px; }
+}
+
+// Text align
+.text-center { text-align: center; }
+.text-right  { text-align: right; }

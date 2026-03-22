@@ -1,0 +1,184 @@
+<!-- ══════════════════════════════════════════════════════════════
+     searching.component.html  — single component, 8 algorithms
+     ══════════════════════════════════════════════════════════════ -->
+<div class="srch-page">
+
+  <!-- ══ Page header ══════════════════════════════════════════ -->
+  <div class="srch-page-header">
+    <h1 class="srch-page-title">Searching Algorithms</h1>
+    <p class="srch-page-sub">
+      Interactive step-by-step visualisations of 8 classic and modern searching
+      algorithms. Switch tabs to compare strategies, adjust the target value or
+      regenerate the array at any time.
+    </p>
+  </div>
+
+  <!-- ══ Main card ════════════════════════════════════════════ -->
+  <div class="srch-card">
+
+    <!-- ── Tab strip ─────────────────────────────────────────── -->
+    <div class="srch-tabs" role="tablist">
+      <button
+        *ngFor="let algo of algorithms"
+        class="srch-tab"
+        [class.srch-tab--active]="algo.key === activeKey"
+        [disabled]="isSearching"
+        (click)="selectAlgo(algo.key)"
+        role="tab"
+        [attr.aria-selected]="algo.key === activeKey"
+      >
+        {{ algo.label }}
+        <span class="tab-badge" *ngIf="algo.requireSort">sorted</span>
+      </button>
+    </div>
+
+    <!-- ── Header (title + steps counter) ────────────────────── -->
+    <div class="srch-header">
+      <div class="srch-title-block">
+        <h2 class="srch-title">{{ activeAlgo.label }}</h2>
+        <span class="srch-badge">{{ activeAlgo.time }} time · {{ activeAlgo.space }} space</span>
+        <span class="srch-badge srch-badge--warn" *ngIf="activeAlgo.requireSort">
+          requires sorted array
+        </span>
+      </div>
+
+      <div class="srch-counter-chip">
+        <span class="counter-value">{{ steps }}</span>
+        <span class="counter-label">Steps</span>
+      </div>
+    </div>
+
+    <!-- ── Target input row ───────────────────────────────────── -->
+    <div class="srch-target-row">
+      <div class="target-field-box"
+           [class.focused]="targetFocused"
+           [class.filled]="targetInput">
+        <label class="floating-label">Target value</label>
+        <div class="target-inner">
+          <i class="pi pi-search field-icon"></i>
+          <input
+            type="number"
+            class="target-input"
+            [(ngModel)]="targetInput"
+            [disabled]="isSearching"
+            (focus)="targetFocused = true"
+            (blur)="targetFocused = false"
+          />
+        </div>
+      </div>
+
+      <!-- Result message pill -->
+      <div class="result-pill"
+           *ngIf="resultMessage"
+           [class.result-pill--found]="resultFound"
+           [class.result-pill--miss]="!resultFound">
+        {{ resultMessage }}
+      </div>
+    </div>
+
+    <!-- ── Legend ────────────────────────────────────────────── -->
+    <div class="srch-legend">
+      <span class="leg-dot leg-dot--default"></span><span class="leg-txt">Default</span>
+      <span class="leg-dot leg-dot--scanning"></span><span class="leg-txt">Scanning</span>
+      <span class="leg-dot leg-dot--comparing"></span><span class="leg-txt">Mid / Probe</span>
+      <span class="leg-dot leg-dot--path"></span><span class="leg-txt">Jump / Doubling</span>
+      <span class="leg-dot leg-dot--bound"></span><span class="leg-txt">Boundary (lo/hi)</span>
+      <span class="leg-dot leg-dot--rejected"></span><span class="leg-txt">Eliminated</span>
+      <span class="leg-dot leg-dot--found"></span><span class="leg-txt">Found</span>
+    </div>
+
+    <!-- ── Array visualisation (cells) ───────────────────────── -->
+    <div class="srch-array">
+      <div
+        *ngFor="let cell of cells; let i = index"
+        class="srch-cell"
+        [class.srch-cell--scanning]="cell.state  === 'scanning'"
+        [class.srch-cell--comparing]="cell.state === 'comparing'"
+        [class.srch-cell--path]="cell.state      === 'path'"
+        [class.srch-cell--bound]="cell.state     === 'bound'"
+        [class.srch-cell--rejected]="cell.state  === 'rejected'"
+        [class.srch-cell--found]="cell.state     === 'found'"
+        [class.srch-cell--target]="cell.value    === targetValue && !isSearching && !isComplete"
+        [title]="'Index ' + i + ' · Value ' + cell.value"
+      >
+        <span class="cell-val">{{ cell.value }}</span>
+        <span class="cell-idx">{{ i }}</span>
+      </div>
+    </div>
+
+    <!-- ── Controls ──────────────────────────────────────────── -->
+    <div class="srch-controls">
+
+      <div class="ctrl-group">
+        <label class="ctrl-label">Array Size — {{ arraySize }}</label>
+        <input type="range" class="neu-slider"
+               min="10" max="40" step="1"
+               [(ngModel)]="arraySize"
+               [disabled]="isSearching"
+               (change)="generateArray()" />
+      </div>
+
+      <div class="ctrl-group">
+        <label class="ctrl-label">Speed — {{ speedLabel }}</label>
+        <input type="range" class="neu-slider"
+               min="10" max="300" step="10"
+               [(ngModel)]="speed"
+               [disabled]="isSearching" />
+      </div>
+
+      <div class="ctrl-buttons">
+        <button class="neu-btn-secondary"
+                (click)="generateArray()"
+                [disabled]="isSearching">
+          <i class="pi pi-refresh"></i> New Array
+        </button>
+        <button class="neu-btn-primary search-btn"
+                (click)="startSearch()"
+                [disabled]="isSearching || isComplete">
+          <i class="pi pi-search"></i>
+          {{ isSearching ? 'Searching…' : isComplete ? 'Done ✓' : 'Search' }}
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── Algorithm description ──────────────────────────────── -->
+    <div class="srch-desc">
+      <p>{{ activeAlgo.description }}</p>
+    </div>
+
+  </div><!-- /srch-card -->
+
+  <!-- ══ Complexity reference table ═══════════════════════════ -->
+  <div class="cmp-card">
+    <h3 class="cmp-title">Complexity Reference</h3>
+    <div class="cmp-table">
+      <div class="cmp-row cmp-head">
+        <span>Algorithm</span>
+        <span>Best</span>
+        <span>Average</span>
+        <span>Worst</span>
+        <span>Space</span>
+        <span>Sorted?</span>
+      </div>
+      <div
+        class="cmp-row"
+        *ngFor="let row of complexityRows"
+        [class.cmp-row--active]="row.name.toLowerCase() === activeAlgo.label.split(' ')[0].toLowerCase()"
+      >
+        <span class="cmp-name">{{ row.name }}</span>
+        <span class="cmp-val">{{ row.best }}</span>
+        <span class="cmp-val">{{ row.avg }}</span>
+        <span class="cmp-val"
+              [class.cmp-bad]="row.worst === 'O(n)' && row.avg !== 'O(n)'">
+          {{ row.worst }}
+        </span>
+        <span class="cmp-val">{{ row.space }}</span>
+        <span class="cmp-sorted" [class.cmp-yes]="row.sorted">
+          {{ row.sorted ? '✓' : '✗' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>

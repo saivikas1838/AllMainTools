@@ -1,0 +1,151 @@
+<!-- ══════════════════════════════════════════════════════════════
+     sorting.component.html  — single component, all 6 algorithms
+     ══════════════════════════════════════════════════════════════ -->
+<div class="viz-page">
+
+  <!-- ══ Page title ═══════════════════════════════════════════ -->
+  <div class="viz-page-header">
+    <h1 class="viz-page-title">Sorting Algorithms</h1>
+    <p class="viz-page-sub">
+      Interactive step-by-step visualisations. Switch algorithms using the tabs below —
+      each tab shares the same controls and live counters.
+    </p>
+  </div>
+
+  <!-- ══ Main card ════════════════════════════════════════════ -->
+  <div class="viz-card">
+
+    <!-- ── Algorithm tab strip ───────────────────────────────── -->
+    <div class="viz-tabs" role="tablist">
+      <button
+        *ngFor="let algo of algorithms"
+        class="viz-tab"
+        [class.viz-tab--active]="algo.key === activeKey"
+        [disabled]="isSorting"
+        (click)="selectAlgo(algo.key)"
+        role="tab"
+        [attr.aria-selected]="algo.key === activeKey"
+      >
+        {{ algo.label }}
+      </button>
+    </div>
+
+    <!-- ── Header row (title + counters) ─────────────────────── -->
+    <div class="viz-header">
+      <div class="viz-title-block">
+        <h2 class="viz-title">{{ activeAlgo.label }}</h2>
+        <span class="viz-badge">{{ activeAlgo.time }} time · {{ activeAlgo.space }} space</span>
+      </div>
+
+      <div class="viz-counters">
+        <div class="counter-chip">
+          <span class="counter-value">{{ comparisons }}</span>
+          <span class="counter-label">Comparisons</span>
+        </div>
+        <div class="counter-chip">
+          <span class="counter-value">{{ swaps }}</span>
+          <span class="counter-label">Swaps</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Legend ────────────────────────────────────────────── -->
+    <div class="viz-legend">
+      <span class="leg-dot leg-dot--default"></span><span class="leg-txt">Default</span>
+      <span class="leg-dot leg-dot--comparing"></span><span class="leg-txt">Comparing</span>
+      <span class="leg-dot leg-dot--swapping"></span><span class="leg-txt">Swapping</span>
+      <ng-container *ngIf="activeAlgo.showPivot">
+        <span class="leg-dot leg-dot--pivot"></span><span class="leg-txt">Pivot</span>
+      </ng-container>
+      <span class="leg-dot leg-dot--sorted"></span><span class="leg-txt">Sorted</span>
+    </div>
+
+    <!-- ── Bar chart ─────────────────────────────────────────── -->
+    <div class="viz-chart">
+      <div
+        *ngFor="let bar of bars"
+        class="viz-bar"
+        [class.viz-bar--comparing]="bar.state === 'comparing'"
+        [class.viz-bar--swapping]="bar.state  === 'swapping'"
+        [class.viz-bar--pivot]="bar.state     === 'pivot'"
+        [class.viz-bar--sorted]="bar.state    === 'sorted'"
+        [style.height.%]="bar.value"
+        [title]="bar.value"
+      >
+        <span class="bar-val" *ngIf="bars.length <= 20">{{ bar.value }}</span>
+      </div>
+    </div>
+
+    <!-- ── Controls ──────────────────────────────────────────── -->
+    <div class="viz-controls">
+
+      <div class="ctrl-group">
+        <label class="ctrl-label">Array Size — {{ arraySize }}</label>
+        <input type="range" class="neu-slider"
+               min="10" max="50" step="1"
+               [(ngModel)]="arraySize"
+               [disabled]="isSorting"
+               (change)="generateArray()" />
+      </div>
+
+      <div class="ctrl-group">
+        <label class="ctrl-label">Speed — {{ speedLabel }}</label>
+        <input type="range" class="neu-slider"
+               min="10" max="200" step="10"
+               [(ngModel)]="speed"
+               [disabled]="isSorting" />
+      </div>
+
+      <div class="ctrl-buttons">
+        <button class="neu-btn-secondary"
+                (click)="generateArray()"
+                [disabled]="isSorting">
+          <i class="pi pi-refresh"></i> New Array
+        </button>
+        <button class="neu-btn-primary sort-btn"
+                (click)="startSort()"
+                [disabled]="isSorting || isSorted">
+          <i class="pi pi-play"></i>
+          {{ isSorting ? 'Sorting…' : isSorted ? 'Sorted ✓' : 'Sort' }}
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── Description ───────────────────────────────────────── -->
+    <div class="viz-desc">
+      <p>{{ activeAlgo.description }}</p>
+    </div>
+
+  </div><!-- /viz-card -->
+
+  <!-- ══ Complexity comparison table ══════════════════════════ -->
+  <div class="cmp-card">
+    <h3 class="cmp-title">Complexity Reference</h3>
+    <div class="cmp-table">
+      <div class="cmp-row cmp-head">
+        <span>Algorithm</span>
+        <span>Best</span>
+        <span>Average</span>
+        <span>Worst</span>
+        <span>Space</span>
+        <span>Stable</span>
+      </div>
+      <div
+        class="cmp-row"
+        *ngFor="let row of complexityRows"
+        [class.cmp-row--active]="row.name.toLowerCase() === activeAlgo.label.split(' ')[0].toLowerCase()"
+      >
+        <span class="cmp-name">{{ row.name }}</span>
+        <span class="cmp-val">{{ row.best }}</span>
+        <span class="cmp-val">{{ row.avg }}</span>
+        <span class="cmp-val" [class.cmp-bad]="row.worst.includes('n²') && !row.worst.includes('log')">
+          {{ row.worst }}
+        </span>
+        <span class="cmp-val">{{ row.space }}</span>
+        <span class="cmp-stable" [class.cmp-yes]="row.stable">{{ row.stable ? '✓' : '✗' }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -21,15 +21,38 @@ export class NavigationBarComponent {
     this.items = [
       {
         label: 'Home',
-        icon: 'pi pi-home'
+        icon: 'pi pi-home',
+        command: () => {
+          this.router.navigate(['/dashboard'])
+        }
       },
       {
         label: 'calculator',
         icon: 'pi pi-calculator',
-        command:() =>{
-          this.router.navigate(['/tools','calculator'])
+        command: () => {
+          this.router.navigate(['/tools', 'calculator'])
         }
       },
+      {
+        label: 'Data structures',
+        icon: 'pi pi-search',
+        items: [
+          {
+            label: 'Sorting',
+            icon: 'pi pi-bolt',
+            command:()=>{
+              this.router.navigate(['/data-structures','sorting'])
+            }
+          },
+          {
+            label: 'Searching',
+            icon: 'pi pi-server',
+            command:()=>{
+              this.router.navigate(['/data-structures','searching'])
+            }
+          }
+        ]
+        },
       {
         label: 'Projects',
         icon: 'pi pi-search',
@@ -64,8 +87,12 @@ export class NavigationBarComponent {
       },
       {
         label: 'Contact',
-        icon: 'pi pi-envelope'
+        icon: 'pi pi-envelope',
+        command: () => {
+          this.router.navigate(['/tools', 'contact'])
+        }
       }
+
     ];
   }
 

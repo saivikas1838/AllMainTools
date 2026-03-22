@@ -1,0 +1,334 @@
+// ─── Variables ────────────────────────────────────────────────────────────────
+$bg: #e8eaf0;
+$shadow-light: #ffffff;
+$shadow-dark: #c5c8d4;
+$text-primary: #3d4263;
+$text-muted: #8b90a8;
+$accent: #6c71a0;
+$label-bg: #e8eaf0; // same as card bg so label masks the border cleanly
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+.neu-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.neu-card {
+  background: $bg;
+  border-radius: 32px;
+  padding: 48px 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow:
+    12px 12px 28px $shadow-dark,
+    -12px -12px 28px $shadow-light;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.form-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+.neu-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: $bg;
+  box-shadow:
+    6px 6px 14px $shadow-dark,
+    -6px -6px 14px $shadow-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+
+  .pi { font-size: 1.8rem; color: $text-muted; }
+}
+
+// ─── Text ─────────────────────────────────────────────────────────────────────
+.title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: $text-muted;
+  margin: -10px 0 4px;
+}
+
+// ─── Field wrapper ────────────────────────────────────────────────────────────
+.neu-field-wrapper {
+  width: 100%;
+}
+
+// The box that holds the border + floating label + inset shadow
+.neu-input-box {
+  position: relative;
+  width: 100%;
+  border: 1.5px solid rgba($text-muted, 0.3);
+  border-radius: 12px;
+  background: $bg;
+  box-shadow:
+    inset 4px 4px 10px $shadow-dark,
+    inset -4px -4px 10px $shadow-light;
+  transition: border-color 0.2s;
+
+  // ── Floating label ──────────────────────────────────────────────────────────
+  .floating-label {
+    position: absolute;
+    top: 50%;
+    left: 42px; // sits just after the icon
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: $text-muted;
+    background: $label-bg;
+    padding: 0 4px;
+    pointer-events: none;
+    transition: top 0.18s ease, left 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  // ── Raised label state: focused OR has value ────────────────────────────────
+  &.focused,
+  &.filled {
+    .floating-label {
+      top: 0;
+      left: 12px;
+      font-size: 0.72rem;
+      color: $accent;
+    }
+  }
+
+  &.focused {
+    border-color: rgba($accent, 0.55);
+  }
+}
+
+// ─── Input inner row (icon + input + optional eye btn) ────────────────────────
+.input-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 52px;
+  padding: 0 12px;
+  gap: 10px;
+}
+
+.field-icon {
+  font-size: 0.95rem;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+// ─── Actual <input> ───────────────────────────────────────────────────────────
+.neu-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: $text-primary;
+
+  // Always hide native placeholder — floating label replaces it
+  &::placeholder { color: transparent; }
+
+  // Password field: leave room for eye toggle
+  &.neu-input--password {
+    padding-right: 4px;
+  }
+}
+
+// ─── Eye toggle button ────────────────────────────────────────────────────────
+.toggle-eye {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+
+  &:hover { color: $accent; }
+
+  .pi { font-size: 1rem; }
+}
+
+// ─── Row: Remember me + Forgot password ──────────────────────────────────────
+.row-between {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remember-label {
+  font-size: 0.85rem;
+  color: $text-muted;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: $accent;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Custom Neumorphic Toggle ─────────────────────────────────────────────────
+.neu-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: $bg;
+  box-shadow:
+    inset 3px 3px 7px $shadow-dark,
+    inset -3px -3px 7px $shadow-light;
+  transition: background 0.25s;
+  flex-shrink: 0;
+  padding: 0;
+
+  &__knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $bg;
+    box-shadow:
+      2px 2px 5px $shadow-dark,
+      -2px -2px 5px $shadow-light;
+    transition: transform 0.25s ease, background 0.25s;
+  }
+
+  &--on {
+    background: rgba($accent, 0.15);
+
+    .neu-toggle__knob {
+      transform: translateX(20px);
+      background: $accent;
+      box-shadow:
+        2px 2px 5px rgba($accent, 0.4),
+        -1px -1px 3px $shadow-light;
+    }
+  }
+}
+
+// ─── Primary Sign In button ───────────────────────────────────────────────────
+.neu-btn-primary {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: $bg;
+  color: $text-primary;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow:
+    6px 6px 14px $shadow-dark,
+    -6px -6px 14px $shadow-light;
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:active {
+    box-shadow:
+      inset 4px 4px 10px $shadow-dark,
+      inset -4px -4px 10px $shadow-light;
+    transform: scale(0.98);
+  }
+}
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+.divider-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba($text-muted, 0.3);
+}
+
+.divider-text {
+  font-size: 0.7rem;
+  color: $text-muted;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+// ─── Social buttons ───────────────────────────────────────────────────────────
+.social-row {
+  display: flex;
+  gap: 16px;
+}
+
+.neu-social-btn {
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: $bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $text-primary;
+  box-shadow:
+    5px 5px 12px $shadow-dark,
+    -5px -5px 12px $shadow-light;
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:active {
+    box-shadow:
+      inset 3px 3px 8px $shadow-dark,
+      inset -3px -3px 8px $shadow-light;
+    transform: scale(0.95);
+  }
+}
+
+// ─── Sign-up footer ───────────────────────────────────────────────────────────
+.signup-text {
+  font-size: 0.85rem;
+  color: $text-muted;
+  margin: 0;
+}
+
+.signup-link {
+  color: $accent;
+  font-weight: 700;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}

@@ -1,0 +1,639 @@
+// ══════════════════════════════════════════════════════════════════
+//  searching.component.scss — neumorphic design system tokens
+// ══════════════════════════════════════════════════════════════════
+
+// ── Tokens ────────────────────────────────────────────────────────
+$bg          : #e8eaf0;
+$neu-light   : #ffffff;
+$neu-dark    : #c5c8d4;
+$text-primary: #3d4263;
+$text-muted  : #8b90a8;
+$accent      : #6c71a0;
+$accent-light: rgba(#6c71a0, 0.12);
+
+// Cell state colours
+$scanning : #e9a84c;    // orange  — active scan
+$comparing: #f0c040;    // yellow  — mid / probe
+$path-col  : #3fb8af;   // teal    — jump / doubling
+$bound-col : #9b8ec4;   // soft purple — lo / hi bounds
+$rejected  : #cdd0dc;   // muted   — eliminated
+$found-col : #4caf7d;   // green   — target found
+$warn-col  : #e06b6b;   // red     — used in badges
+
+$success   : #4caf7d;
+$font      : 'Nunito', 'Segoe UI', sans-serif;
+
+// ── Shadow helpers ────────────────────────────────────────────────
+@mixin raised($s: 1) {
+  box-shadow:
+    #{6px*$s} #{6px*$s} #{16px*$s} $neu-dark,
+    #{-6px*$s} #{-6px*$s} #{16px*$s} $neu-light;
+}
+@mixin inset($s: 1) {
+  box-shadow:
+    inset #{4px*$s} #{4px*$s} #{10px*$s} $neu-dark,
+    inset #{-4px*$s} #{-4px*$s} #{10px*$s} $neu-light;
+}
+@mixin flat {
+  box-shadow: 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  PAGE SHELL
+// ══════════════════════════════════════════════════════════════════
+.srch-page {
+  background: $bg;
+  min-height: 100vh;
+  padding: 40px 28px 60px;
+  font-family: $font;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.srch-page-header { display: flex; flex-direction: column; gap: 8px; }
+
+.srch-page-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: $text-primary;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.srch-page-sub {
+  font-size: 0.875rem;
+  color: $text-muted;
+  max-width: 640px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MAIN CARD
+// ══════════════════════════════════════════════════════════════════
+.srch-card {
+  background: $bg;
+  border-radius: 24px;
+  padding: 0 0 28px;
+  @include raised;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ── Tab strip ─────────────────────────────────────────────────────
+.srch-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: rgba($neu-dark, 0.22);
+  padding: 10px 14px;
+  border-radius: 24px 24px 0 0;
+  border-bottom: 1px solid rgba($neu-dark, 0.4);
+}
+
+.srch-tab {
+  height: 34px;
+  padding: 0 13px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: $text-muted;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+
+  &:hover:not(:disabled):not(.srch-tab--active) {
+    color: $text-primary;
+    background: rgba($neu-light, 0.55);
+  }
+
+  &--active {
+    background: $bg;
+    color: $accent;
+    @include flat;
+  }
+
+  &:disabled { opacity: 0.42; cursor: not-allowed; }
+}
+
+// Small "sorted" pill inside the tab
+.tab-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: $accent;
+  background: $accent-light;
+  border-radius: 999px;
+  padding: 1px 5px;
+}
+
+// ── Side padding for inner sections ───────────────────────────────
+.srch-header,
+.srch-target-row,
+.srch-legend,
+.srch-array,
+.srch-controls,
+.srch-desc {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+// ── Header ────────────────────────────────────────────────────────
+.srch-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 22px;
+  padding-bottom: 14px;
+}
+
+.srch-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.srch-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.srch-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $accent;
+  background: $accent-light;
+  border-radius: 999px;
+  padding: 3px 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  width: fit-content;
+
+  &--warn {
+    color: $warn-col;
+    background: rgba($warn-col, 0.1);
+  }
+}
+
+.srch-counter-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $bg;
+  border-radius: 12px;
+  padding: 10px 20px;
+  @include inset(0.85);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.counter-value {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.counter-label {
+  font-size: 0.63rem;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+
+// ── Target input row ──────────────────────────────────────────────
+.srch-target-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+}
+
+// Floating-label input (same pattern as login component)
+.target-field-box {
+  position: relative;
+  width: 200px;
+  flex-shrink: 0;
+  border: 1.5px solid rgba($text-muted, 0.28);
+  border-radius: 12px;
+  background: $bg;
+  @include inset;
+  transition: border-color 0.2s;
+
+  .floating-label {
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    transform: translateY(-50%);
+    font-size: 0.88rem;
+    color: $text-muted;
+    background: $bg;
+    padding: 0 4px;
+    pointer-events: none;
+    transition: top 0.18s, left 0.18s, font-size 0.18s, color 0.18s;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  &.focused,
+  &.filled {
+    .floating-label {
+      top: 0;
+      left: 10px;
+      font-size: 0.7rem;
+      color: $accent;
+    }
+  }
+
+  &.focused { border-color: rgba($accent, 0.55); }
+}
+
+.target-inner {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px;
+  gap: 8px;
+}
+
+.field-icon { font-size: 0.9rem; color: $text-muted; flex-shrink: 0; }
+
+.target-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: $font;
+  color: $text-primary;
+  width: 100%;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button { -webkit-appearance: none; }
+  &[type=number] { -moz-appearance: textfield; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// Result pill
+.result-pill {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: $font;
+  @include flat;
+
+  &--found {
+    color: $found-col;
+    background: rgba($found-col, 0.08);
+    box-shadow: 3px 3px 8px rgba($found-col, 0.2), -3px -3px 8px $neu-light;
+  }
+
+  &--miss {
+    color: $warn-col;
+    background: rgba($warn-col, 0.08);
+    box-shadow: 3px 3px 8px rgba($warn-col, 0.2), -3px -3px 8px $neu-light;
+  }
+}
+
+// ── Legend ────────────────────────────────────────────────────────
+.srch-legend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+}
+
+.leg-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--default   { background: #b0b4c8; }
+  &--scanning  { background: $scanning; }
+  &--comparing { background: $comparing; }
+  &--path      { background: $path-col; }
+  &--bound     { background: $bound-col; }
+  &--rejected  { background: $rejected; }
+  &--found     { background: $found-col; }
+}
+
+.leg-txt {
+  font-size: 0.73rem;
+  color: $text-muted;
+  margin-right: 8px;
+}
+
+// ── Array cells ───────────────────────────────────────────────────
+.srch-array {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  background: $bg;
+  border-radius: 14px;
+  padding: 14px !important;
+  @include inset;
+  min-height: 100px;
+  align-content: flex-start;
+}
+
+.srch-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 52px;
+  border-radius: 10px;
+  background: $bg;
+  @include flat;
+  transition: background 0.1s, box-shadow 0.1s, transform 0.1s;
+  flex-shrink: 0;
+
+  .cell-val {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: $text-primary;
+    line-height: 1;
+    transition: color 0.1s;
+  }
+
+  .cell-idx {
+    font-size: 0.58rem;
+    color: $text-muted;
+    margin-top: 3px;
+  }
+
+  // ── State colours ──────────────────────────────────────────
+  &--scanning {
+    background: $scanning;
+    box-shadow: 0 0 8px rgba($scanning, 0.5), 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+    .cell-val { color: #fff; }
+  }
+
+  &--comparing {
+    background: $comparing;
+    box-shadow: 0 0 8px rgba($comparing, 0.5), 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+    transform: translateY(-4px);
+    .cell-val { color: $text-primary; }
+  }
+
+  &--path {
+    background: $path-col;
+    box-shadow: 0 0 9px rgba($path-col, 0.5), 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+    transform: translateY(-3px);
+    .cell-val { color: #fff; }
+  }
+
+  &--bound {
+    background: $bound-col;
+    box-shadow: 0 0 9px rgba($bound-col, 0.4), 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+    .cell-val { color: #fff; }
+  }
+
+  &--rejected {
+    background: $rejected;
+    @include inset(0.6);
+    opacity: 0.55;
+    .cell-val { color: $text-muted; }
+  }
+
+  &--found {
+    background: $found-col;
+    box-shadow: 0 0 14px rgba($found-col, 0.6), 4px 4px 10px $neu-dark, -4px -4px 10px $neu-light;
+    transform: translateY(-6px) scale(1.08);
+    .cell-val { color: #fff; font-size: 0.9rem; }
+    .cell-idx { color: rgba(#fff, 0.8); }
+  }
+
+  // Subtle highlight for the target value before search starts
+  &--target {
+    border: 2px solid rgba($accent, 0.4);
+  }
+}
+
+// ── Controls ─────────────────────────────────────────────────────
+.srch-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  padding-bottom: 4px;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 130px;
+}
+
+.ctrl-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.neu-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: $bg;
+  @include inset(0.8);
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $bg;
+    box-shadow: 3px 3px 7px $neu-dark, -3px -3px 7px $neu-light;
+    cursor: pointer;
+  }
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.ctrl-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.neu-btn-secondary {
+  height: 42px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 11px;
+  background: $bg;
+  color: $text-primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: $font;
+  @include flat;
+  transition: box-shadow 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { color: $accent; }
+  &:active:not(:disabled) { @include inset; transform: scale(0.97); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.neu-btn-primary {
+  height: 42px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 11px;
+  background: $bg;
+  color: $text-primary;
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-family: $font;
+  @include raised(0.9);
+  transition: box-shadow 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &.search-btn { min-width: 115px; justify-content: center; }
+  &:hover:not(:disabled) { color: $accent; }
+  &:active:not(:disabled) { @include inset; transform: scale(0.97); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+// ── Description ───────────────────────────────────────────────────
+.srch-desc {
+  padding-top: 14px;
+
+  p {
+    background: $bg;
+    border-radius: 11px;
+    padding: 12px 16px;
+    @include inset(0.8);
+    font-size: 0.8rem;
+    color: $text-muted;
+    line-height: 1.6;
+    margin: 0;
+    strong { color: $text-primary; }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  COMPLEXITY TABLE
+// ══════════════════════════════════════════════════════════════════
+.cmp-card {
+  background: $bg;
+  border-radius: 20px;
+  padding: 22px 22px 18px;
+  @include raised(0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmp-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.cmp-table {
+  border-radius: 12px;
+  overflow: hidden;
+  @include inset(0.7);
+}
+
+.cmp-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.3fr 1fr 0.8fr 0.8fr;
+  padding: 9px 14px;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba($neu-dark, 0.4);
+  font-size: 0.77rem;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+
+  &.cmp-head {
+    font-size: 0.66rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: $text-muted;
+    background: rgba($neu-dark, 0.17);
+    padding: 9px 14px;
+  }
+
+  &--active {
+    background: $accent-light;
+    .cmp-name { color: $accent; font-weight: 800; }
+  }
+}
+
+.cmp-name { font-weight: 700; color: $text-primary; transition: color 0.15s; }
+.cmp-val  { color: $text-muted; font-family: 'Courier New', monospace; font-size: 0.74rem; }
+.cmp-bad  { color: $warn-col; font-weight: 700; }
+.cmp-sorted {
+  font-weight: 700;
+  color: $text-muted;
+  &.cmp-yes { color: $success; }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ══════════════════════════════════════════════════════════════════
+@media (max-width: 680px) {
+  .srch-page    { padding: 20px 12px 40px; }
+  .srch-page-title { font-size: 1.5rem; }
+  .srch-array   { gap: 4px; }
+  .srch-cell    { width: 40px; height: 44px; border-radius: 8px; .cell-val { font-size: 0.72rem; } }
+  .srch-controls { flex-direction: column; align-items: stretch; }
+  .ctrl-buttons { justify-content: stretch; }
+  .neu-btn-primary,
+  .neu-btn-secondary { flex: 1; justify-content: center; }
+  .target-field-box { width: 100%; }
+  .srch-target-row { flex-direction: column; align-items: stretch; }
+  .cmp-row { font-size: 0.68rem; padding: 7px 10px; }
+  .srch-tab { font-size: 0.72rem; padding: 0 8px; }
+  .tab-badge { display: none; }
+}
+
+
+

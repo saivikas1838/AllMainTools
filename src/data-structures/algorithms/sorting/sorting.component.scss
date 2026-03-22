@@ -1,0 +1,471 @@
+// ══════════════════════════════════════════════════════════════════
+//  sorting.component.scss  — neumorphic design system tokens
+// ══════════════════════════════════════════════════════════════════
+
+// ── Tokens ────────────────────────────────────────────────────────
+$bg          : #e8eaf0;
+$neu-light   : #ffffff;
+$neu-dark    : #c5c8d4;
+$text-primary: #3d4263;
+$text-muted  : #8b90a8;
+$accent      : #6c71a0;
+$accent-light: rgba(#6c71a0, 0.12);
+$warn        : #e9a84c;   // comparing
+$danger      : #e06b6b;   // swapping
+$success     : #4caf7d;   // stable ✓
+$pivot-col   : #f0c040;   // quick-sort pivot
+$font        : 'Nunito', 'Segoe UI', sans-serif;
+
+// ── Shadow helpers ────────────────────────────────────────────────
+@mixin raised($s: 1) {
+  box-shadow:
+    #{6px*$s} #{6px*$s} #{16px*$s} $neu-dark,
+    #{-6px*$s} #{-6px*$s} #{16px*$s} $neu-light;
+}
+@mixin inset($s: 1) {
+  box-shadow:
+    inset #{4px*$s} #{4px*$s} #{10px*$s} $neu-dark,
+    inset #{-4px*$s} #{-4px*$s} #{10px*$s} $neu-light;
+}
+@mixin flat {
+  box-shadow: 3px 3px 8px $neu-dark, -3px -3px 8px $neu-light;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  PAGE
+// ══════════════════════════════════════════════════════════════════
+.viz-page {
+  background: $bg;
+  min-height: 100vh;
+  padding: 40px 28px 60px;
+  font-family: $font;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+// ── Page header ───────────────────────────────────────────────────
+.viz-page-header { display: flex; flex-direction: column; gap: 8px; }
+
+.viz-page-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: $text-primary;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.viz-page-sub {
+  font-size: 0.875rem;
+  color: $text-muted;
+  max-width: 580px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MAIN CARD
+// ══════════════════════════════════════════════════════════════════
+.viz-card {
+  background: $bg;
+  border-radius: 24px;
+  padding: 0 0 28px;
+  @include raised;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+// ── Tab strip ────────────────────────────────────────────────────
+.viz-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0;
+  background: rgba($neu-dark, 0.25);
+  padding: 10px 16px;
+  border-radius: 24px 24px 0 0;
+  border-bottom: 1px solid rgba($neu-dark, 0.4);
+}
+
+.viz-tab {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: $text-muted;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled):not(.viz-tab--active) {
+    color: $text-primary;
+    background: rgba($neu-light, 0.6);
+  }
+
+  &--active {
+    background: $bg;
+    color: $accent;
+    @include flat;
+  }
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+// ── Inner padding wrapper ─────────────────────────────────────────
+.viz-header,
+.viz-legend,
+.viz-chart,
+.viz-controls,
+.viz-desc {
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+// ── Header row ───────────────────────────────────────────────────
+.viz-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 24px;
+  padding-bottom: 16px;
+}
+
+.viz-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.viz-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $accent;
+  background: $accent-light;
+  border-radius: 999px;
+  padding: 3px 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+// Counter chips
+.viz-counters { display: flex; gap: 10px; }
+
+.counter-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $bg;
+  border-radius: 12px;
+  padding: 8px 16px;
+  @include inset(0.85);
+  min-width: 76px;
+}
+
+.counter-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.counter-label {
+  font-size: 0.63rem;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+
+// ── Legend ────────────────────────────────────────────────────────
+.viz-legend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+}
+
+.leg-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--default   { background: #b0b4c8; }
+  &--comparing { background: $warn; }
+  &--swapping  { background: $danger; }
+  &--pivot     { background: $pivot-col; }
+  &--sorted    { background: $accent; }
+}
+
+.leg-txt {
+  font-size: 0.75rem;
+  color: $text-muted;
+  margin-right: 10px;
+}
+
+// ── Bar chart ─────────────────────────────────────────────────────
+.viz-chart {
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  background: $bg;
+  border-radius: 14px;
+  padding-top: 10px;
+  padding-bottom: 0;
+  @include inset;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.viz-bar {
+  flex: 1;
+  min-width: 3px;
+  border-radius: 4px 4px 0 0;
+  background: #b0b4c8;
+  position: relative;
+  transition: height 0.1s ease, background-color 0.08s ease;
+
+  &--comparing { background: $warn;      box-shadow: 0 0 7px rgba($warn, 0.5); }
+  &--swapping  { background: $danger;    box-shadow: 0 0 9px rgba($danger, 0.5); }
+  &--pivot     { background: $pivot-col; box-shadow: 0 0 9px rgba($pivot-col, 0.6); }
+  &--sorted    { background: $accent; }
+}
+
+.bar-val {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  color: $text-muted;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+// ── Controls ─────────────────────────────────────────────────────
+.viz-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  padding-bottom: 4px;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.ctrl-label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Neumorphic slider
+.neu-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: $bg;
+  @include inset(0.8);
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $bg;
+    box-shadow: 3px 3px 7px $neu-dark, -3px -3px 7px $neu-light;
+    cursor: pointer;
+  }
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.ctrl-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+// Buttons
+.neu-btn-secondary {
+  height: 42px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 11px;
+  background: $bg;
+  color: $text-primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: $font;
+  @include flat;
+  transition: box-shadow 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { color: $accent; }
+  &:active:not(:disabled) { @include inset; transform: scale(0.97); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+.neu-btn-primary {
+  height: 42px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 11px;
+  background: $bg;
+  color: $text-primary;
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-family: $font;
+  @include raised(0.9);
+  transition: box-shadow 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &.sort-btn { min-width: 110px; justify-content: center; }
+  &:hover:not(:disabled) { color: $accent; }
+  &:active:not(:disabled) { @include inset; transform: scale(0.97); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+// ── Description ───────────────────────────────────────────────────
+.viz-desc {
+  padding-top: 16px;
+
+  p {
+    background: $bg;
+    border-radius: 11px;
+    padding: 12px 16px;
+    @include inset(0.8);
+    font-size: 0.8rem;
+    color: $text-muted;
+    line-height: 1.6;
+    margin: 0;
+    strong { color: $text-primary; }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  COMPLEXITY TABLE CARD
+// ══════════════════════════════════════════════════════════════════
+.cmp-card {
+  background: $bg;
+  border-radius: 20px;
+  padding: 24px 24px 20px;
+  @include raised(0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cmp-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.cmp-table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: $bg;
+  @include inset(0.7);
+}
+
+.cmp-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.9fr 0.7fr;
+  padding: 9px 16px;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba($neu-dark, 0.45);
+  font-size: 0.78rem;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+
+  &.cmp-head {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: $text-muted;
+    background: rgba($neu-dark, 0.18);
+    padding: 10px 16px;
+  }
+
+  // Highlight the active algorithm's row
+  &--active {
+    background: $accent-light;
+    .cmp-name { color: $accent; font-weight: 800; }
+  }
+}
+
+.cmp-name {
+  font-weight: 700;
+  color: $text-primary;
+  transition: color 0.15s;
+}
+
+.cmp-val {
+  color: $text-muted;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+
+.cmp-bad { color: $danger; font-weight: 700; }
+
+.cmp-stable {
+  font-weight: 700;
+  color: $text-muted;
+  &.cmp-yes { color: $success; }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ══════════════════════════════════════════════════════════════════
+@media (max-width: 640px) {
+  .viz-page     { padding: 20px 12px 40px; }
+  .viz-page-title { font-size: 1.5rem; }
+  .viz-chart    { height: 180px; }
+  .viz-controls { flex-direction: column; align-items: stretch; }
+  .ctrl-buttons { justify-content: stretch; }
+  .neu-btn-primary,
+  .neu-btn-secondary { flex: 1; justify-content: center; }
+  .cmp-row      { font-size: 0.68rem; padding: 7px 10px; }
+  .viz-tab      { padding: 0 10px; font-size: 0.75rem; }
+}
