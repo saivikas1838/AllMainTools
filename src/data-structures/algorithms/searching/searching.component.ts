@@ -276,27 +276,30 @@ export class SearchingComponent implements OnInit {
 
   // ── 3. Jump Search ────────────────────────────────────────────────────────
   private async jumpSearch(): Promise<void> {
-    const n    = this.cells.length;
-    const step = Math.floor(Math.sqrt(n));
-    let prev   = 0;
+    const n        = this.cells.length;
+    const stepSize = Math.floor(Math.sqrt(n)); // optimal block size = sqrt(n)
+    let   prev     = 0;
+    let   curr     = stepSize;                 // curr advances each jump
 
-    // Jump phase — find the block
-    while (this.cells[Math.min(step, n) - 1].value < this.targetValue) {
-      // Highlight current jump position (teal)
-      const jumpPos = Math.min(step, n) - 1;
-      this.cells[jumpPos].state = 'path';
+    // Jump phase: skip ahead by stepSize until cells[curr] >= target
+    while (curr < n && this.cells[curr].value < this.targetValue) {
+      // Highlight the jump landing position in teal
+      this.cells[curr].state = 'path';
       this.steps++;
       await this.sleep(this.speed);
+      this.cells[curr].state = 'rejected';
 
-      prev = step;
-      if (prev >= n) { this.setResult(false); return; }
+      // Reject the entire block we just skipped over
+      this.rejectRange(prev, curr - 1);
 
-      this.cells[jumpPos].state = 'rejected';
+      prev  = curr;       // move lower bound forward
+      curr += stepSize;   // jump to the next block boundary
     }
 
-    // Linear scan within the block
-    const blockEnd = Math.min(step, n);
-    for (let i = prev; i < blockEnd; i++) {
+    // Linear scan phase: scan from prev up to min(curr, n-1)
+    const blockEnd = Math.min(curr, n - 1);
+
+    for (let i = prev; i <= blockEnd; i++) {
       this.cells[i].state = 'scanning';
       this.steps++;
       await this.sleep(this.speed);
@@ -306,9 +309,16 @@ export class SearchingComponent implements OnInit {
         this.setResult(true, i);
         return;
       }
-      if (this.cells[i].value > this.targetValue) break;
+
+      // Sorted array — no need to scan further right in this block
+      if (this.cells[i].value > this.targetValue) {
+        this.cells[i].state = 'rejected';
+        break;
+      }
+
       this.cells[i].state = 'rejected';
     }
+
     this.setResult(false);
   }
 
